@@ -21,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '-0txcjfx157=q-j_$l9*0&1xgv)jcx9=f@5niz4d#^hii2akz+'
-
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '-0txcjfx157=q-j_$l9*0&1xgv)jcx9=f@5niz4d#^hii2akz+')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
+DEBUG = bool( os.environ.get('DJANGO_DEBUG', True) )
 
-ALLOWED_HOSTS = ['django-env.eba-a2satu6i.us-west-2.elasticbeanstalk.com']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -125,3 +126,8 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+import dj_database_url
+
+    db_from_env = dj_database_url.config(conn_max_age=500)
+    DATABASES['default'].update(db_from_env)
